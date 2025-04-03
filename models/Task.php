@@ -1,43 +1,79 @@
 <?php
+require_once __DIR__ . '/../config/database.php';
 
 class Task
 {
-    private $pdo;
-
-    public function __construct($pdo)
+    public static function create($user_id, $title, $description, $due_date, $priority)
     {
-        $this->pdo = $pdo;
+        $pdo = $GLOBALS['pdo'];
+        $stmt = $pdo->prepare("INSERT INTO tasks (user_id, title, description, due_date, priority)
+                               VALUES (:user_id, :title, :description, :due_date, :priority)");
+        $stmt->execute([
+            ':user_id' => $user_id,
+            ':title' => $title,
+            ':description' => $description,
+            ':due_date' => $due_date,
+            ':priority' => $priority
+        ]);
     }
 
-    public function getAllByUser($user_id)
+    public static function getAll($user_id, $filter = null, $sort = 'due_date')
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM tasks WHERE user_id = ?");
-        $stmt->execute([$user_id]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $pdo = $GLOBALS['pdo'];
+        $query = "SELECT * FROM tasks WHERE user_id = :user_id";
+
+        if ($filter === 'today') {
+            $query .= " AND DATE(due_date) = CURDATE()";
+        } elseif ($filter === 'week') {
+            $query .= " AND WEEK(due_date) = WEEK(CURDATE())";
+        } elseif ($filter === 'done') {
+            $query .= " AND status = 'hoàn thành'";
+        }
+
+        $query .= " ORDER BY $sort ASC";
+
+        $stmt = $pdo->prepare($query);
+        $stmt->execute([':user_id' => $user_id]);
+
+        return $stmt->fetchAll();
     }
 
-    public function getById($id)
+    public static function find($id)
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM tasks WHERE id = ?");
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $pdo = $GLOBALS['pdo'];
+        $stmt = $pdo->prepare("SELECT * FROM tasks WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+        return $stmt->fetch();
     }
 
-    public function create($user_id, $title, $due_date)
+    public static function update($id, $title, $description, $due_date, $priority)
     {
-        $stmt = $this->pdo->prepare("INSERT INTO tasks (user_id, title, due_date) VALUES (?, ?, ?)");
-        return $stmt->execute([$user_id, $title, $due_date]);
+        $pdo = $GLOBALS['pdo'];
+        $stmt = $pdo->prepare("UPDATE tasks SET title = :title, description = :description,
+                               due_date = :due_date, priority = :priority WHERE id = :id");
+        $stmt->execute([
+            ':title' => $title,
+            ':description' => $description,
+            ':due_date' => $due_date,
+            ':priority' => $priority,
+            ':id' => $id
+        ]);
     }
 
-    public function update($id, $title, $due_date)
+    public static function updateStatus($id, $status)
     {
-        $stmt = $this->pdo->prepare("UPDATE tasks SET title = ?, due_date = ? WHERE id = ?");
-        return $stmt->execute([$title, $due_date, $id]);
+        $pdo = $GLOBALS['pdo'];
+        $stmt = $pdo->prepare("UPDATE tasks SET status = :status WHERE id = :id");
+        $stmt->execute([
+            ':status' => $status,
+            ':id' => $id
+        ]);
     }
 
-    public function delete($id)
+    public static function delete($id)
     {
-        $stmt = $this->pdo->prepare("DELETE FROM tasks WHERE id = ?");
-        return $stmt->execute([$id]);
+        $pdo = $GLOBALS['pdo'];
+        $stmt = $pdo->prepare("DELETE FROM tasks WHERE id = :id");
+        $stmt->execute([':id' => $id]);
     }
 }

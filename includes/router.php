@@ -20,22 +20,47 @@ switch ($uri) {
 
     // TASKS
     case '/tasks':
-        redirect_if_not_logged_in();
         require_once BASE_PATH . '/controllers/TaskController.php';
-        listTasks();
+        $controller = new TaskController();
+        $controller->index();
         break;
 
     case '/tasks/create':
-        redirect_if_not_logged_in();
         require_once BASE_PATH . '/controllers/TaskController.php';
-        createTask();
+        $controller = new TaskController();
+        $controller->create();
         break;
 
-    case '/tasks/edit':
-        redirect_if_not_logged_in();
+    case '/tasks/store':
         require_once BASE_PATH . '/controllers/TaskController.php';
-        editTask();
+        $controller = new TaskController();
+        $controller->store();
         break;
+
+    case (preg_match('#^/tasks/edit/(\d+)$#', $uri, $matches) ? true : false):
+        require_once BASE_PATH . '/controllers/TaskController.php';
+        $controller = new TaskController();
+        $controller->edit($matches[1]);
+        break;
+
+    case (preg_match('#^/tasks/update/(\d+)$#', $uri, $matches) ? true : false):
+        require_once BASE_PATH . '/controllers/TaskController.php';
+        $controller = new TaskController();
+        $controller->update($matches[1]);
+        break;
+
+    case '/task/status':
+        require_once BASE_PATH . '/controllers/TaskController.php';
+        $controller = new TaskController();
+        $controller->toggleStatus();
+        break;
+
+    case (preg_match('#^/tasks/delete/(\d+)$#', $uri, $matches) ? true : false):
+        require_once BASE_PATH . '/controllers/TaskController.php';
+        $controller = new TaskController();
+        $controller->delete($matches[1]);
+        break;
+
 
     // HABITS
     case '/habits':
