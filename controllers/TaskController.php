@@ -74,8 +74,15 @@ class TaskController
             return;
         }
 
+        $title = "Chỉnh sửa công việc";
+
+        ob_start();
         include BASE_PATH . '/views/tasks/edit.php';
+        $content = ob_get_clean();
+
+        include BASE_PATH . '/views/layouts/main.php'; // 🟢 Layout chính có Tailwind
     }
+
 
     public function update($id)
     {
