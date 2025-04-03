@@ -8,25 +8,53 @@ function login()
 
     $error = '';
 
+    // if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    //     $email = trim($_POST['email'] ?? '');
+    //     $password = $_POST['password'] ?? '';
+
+    //     // Tìm người dùng theo email
+    //     $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+    //     $stmt->execute([$email]);
+    //     $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    //     // Kiểm tra mật khẩu
+    //     if ($user && password_verify($password, $user['password'])) {
+    //         $_SESSION['user_id'] = $user['id'];
+    //         require_once __DIR__ . '/../cron/send_task_reminders.php';
+    //         header("Location: /dashboard");
+    //         exit;
+    //     } else {
+    //         $error = "Email hoặc mật khẩu không đúng!";
+    //     }
+    // }
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
 
-        // Tìm người dùng theo email
+        // Kết nối và tìm người dùng theo email
         $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
         $stmt->execute([$email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Kiểm tra mật khẩu
         if ($user && password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
-            require_once __DIR__ . '/../cron/send_task_reminders.php';
+
+            // ✅ Gửi mail nhắc việc (nếu có thể), nhưng không dừng nếu lỗi
+            try {
+                require_once __DIR__ . '/../cron/send_task_reminders.php';
+            } catch (Throwable $e) {
+                // Ghi log lỗi nếu cần (không ảnh hưởng chuyển hướng)
+                error_log("Lỗi gửi mail nhắc việc: " . $e->getMessage());
+            }
+
+            // ✅ Luôn chuyển hướng về dashboard dù mail gửi thành công hay không
             header("Location: /dashboard");
             exit;
         } else {
             $error = "Email hoặc mật khẩu không đúng!";
         }
     }
+
 
     include BASE_PATH . '/views/auth/login.php';
 }
