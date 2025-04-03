@@ -63,16 +63,47 @@ switch ($uri) {
 
 
     // HABITS
+    // HABITS
     case '/habits':
-        redirect_if_not_logged_in();
         require_once BASE_PATH . '/controllers/HabitController.php';
-        listHabits();
+        $controller = new HabitController();
+        $controller->index();
         break;
 
     case '/habits/create':
-        redirect_if_not_logged_in();
         require_once BASE_PATH . '/controllers/HabitController.php';
-        createHabit();
+        $controller = new HabitController();
+        $controller->create(); // Hiển thị form thêm
+        break;
+
+    case '/habits/store':
+        require_once BASE_PATH . '/controllers/HabitController.php';
+        $controller = new HabitController();
+        $controller->store(); // Xử lý lưu dữ liệu mới (POST)
+        break;
+
+    case (preg_match('#^/habits/edit/(\d+)$#', $uri, $matches) ? true : false):
+        require_once BASE_PATH . '/controllers/HabitController.php';
+        $controller = new HabitController();
+        $controller->edit($matches[1]); // Hiển thị form chỉnh sửa
+        break;
+
+    case (preg_match('#^/habits/update/(\d+)$#', $uri, $matches) ? true : false):
+        require_once BASE_PATH . '/controllers/HabitController.php';
+        $controller = new HabitController();
+        $controller->update($matches[1]); // Xử lý cập nhật (POST)
+        break;
+
+    case (preg_match('#^/habits/delete/(\d+)$#', $uri, $matches) ? true : false):
+        require_once BASE_PATH . '/controllers/HabitController.php';
+        $controller = new HabitController();
+        $controller->delete($matches[1]);
+        break;
+
+    case (preg_match('#^/habits/complete/(\d+)$#', $uri, $matches) ? true : false):
+        require_once BASE_PATH . '/controllers/HabitController.php';
+        $controller = new HabitController();
+        $controller->complete($matches[1]);
         break;
 
     // GOALS
