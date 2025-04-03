@@ -10,8 +10,8 @@
             Danh sách thói quen
         </h2>
         <a href="/habits/create"
-            class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition shadow">
-            <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition shadow">
+            <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path d="M12 4v16m8-8H4"
                     stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
             </svg>
@@ -68,7 +68,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M6 18L18 6M6 6l12 12" />
                                 </svg>
-                                Xoá
+                                Xóa
                             </a>
                         </div>
                     </div>

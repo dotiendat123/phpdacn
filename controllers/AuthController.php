@@ -20,6 +20,7 @@ function login()
         // Kiểm tra mật khẩu
         if ($user && password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
+            require_once __DIR__ . '/../cron/send_task_reminders.php';
             header("Location: /dashboard");
             exit;
         } else {

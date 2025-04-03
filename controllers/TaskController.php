@@ -14,9 +14,6 @@ class TaskController
         $title = "Quản lý Công việc";
         ob_start();
         include BASE_PATH . '/views/tasks/index.php';
-        $content = ob_get_clean();
-
-        include BASE_PATH . '/views/layouts/main.php';
     }
 
     public function create()

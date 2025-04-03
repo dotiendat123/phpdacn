@@ -140,9 +140,16 @@ switch ($uri) {
 
     // AI Assistant
     case '/ai/assistant':
-        redirect_if_not_logged_in();
         require_once BASE_PATH . '/views/ai/assistant.php';
         break;
+
+    case '/ai/chat':
+        require_once BASE_PATH . '/controllers/AIController.php';
+        $controller = new AIController();
+        $controller->chat();
+        break;
+
+
 
     // AUTH
     case '/login':

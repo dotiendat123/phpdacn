@@ -76,4 +76,30 @@ class Task
         $stmt = $pdo->prepare("DELETE FROM tasks WHERE id = :id");
         $stmt->execute([':id' => $id]);
     }
+    // Lấy danh sách task sắp đến hạn trong vòng 1 giờ
+    // Lấy danh sách task sắp đến hạn trong vòng 1 giờ
+    public static function getUpcomingTasks($interval = '+1 hour')
+    {
+        $pdo = $GLOBALS['pdo'];
+
+        $now = date('Y-m-d H:i:s');
+        $upcoming = date('Y-m-d H:i:s', strtotime($interval));
+
+        // Debug in console xem có đúng thời gian không
+        echo "⏱️ Giờ hiện tại: $now<br>";
+        echo "⏳ Giới hạn đến: $upcoming<br>";
+
+        $stmt = $pdo->prepare("SELECT * FROM tasks WHERE due_date BETWEEN :now AND :upcoming AND status = 'chưa hoàn thành'");
+        $stmt->execute([
+            ':now' => $now,
+            ':upcoming' => $upcoming
+        ]);
+
+        $results = $stmt->fetchAll();
+
+        // Debug luôn kết quả truy vấn
+        echo "🧪 Số task lấy được: " . count($results) . "<br>";
+
+        return $results;
+    }
 }

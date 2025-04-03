@@ -1,54 +1,72 @@
-<?php
-ob_start();
-?>
+<?php ob_start(); ?>
 
-<h2 class="text-xl font-bold mb-4">Trợ lý AI</h2>
+<div class="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow space-y-4">
+    <h2 class="text-xl font-bold text-blue-600 flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
+        </svg>
+        Trợ lý AI - Hỏi tôi bất kỳ điều gì
+    </h2>
 
-<div id="chat-box" class="bg-white p-4 border rounded h-64 overflow-y-auto mb-4"></div>
+    <div id="chat-box" class="bg-gray-50 p-4 h-48 overflow-y-auto rounded text-sm space-y-2">
+        <!-- Tin nhắn sẽ hiển thị ở đây -->
+    </div>
 
-<form id="chat-form" class="flex gap-2">
-    <input type="text" id="user-input" placeholder="Nhập câu hỏi của bạn..." class="flex-1 p-2 border rounded" required>
-    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Gửi</button>
-</form>
+    <form id="chat-form" class="flex items-center gap-3">
+        <input type="text" id="user-input" class="flex-grow p-3 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-300"
+            placeholder="Bạn muốn hỏi gì hôm nay?" />
+        <button type="submit"
+            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-1 transition">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7-7 7M5 5h14" />
+            </svg>
+            Gửi
+        </button>
+    </form>
+</div>
 
 <script>
-    document.getElementById("chat-form").addEventListener("submit", async function(e) {
+    const form = document.getElementById('chat-form');
+    const input = document.getElementById('user-input');
+    const chatBox = document.getElementById('chat-box');
+
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const input = document.getElementById("user-input");
-        const chatBox = document.getElementById("chat-box");
+        const message = input.value.trim();
+        if (!message) return;
 
-        const userMessage = input.value.trim();
-        if (!userMessage) return;
-
-        // Hiển thị câu hỏi
-        chatBox.innerHTML += `<div class="mb-2"><strong>Bạn:</strong> ${userMessage}</div>`;
+        // Hiển thị câu hỏi người dùng
+        chatBox.innerHTML += `<div class="text-right text-blue-600">🙋‍♂️ ${message}</div>`;
+        chatBox.innerHTML += `<div class="text-left text-gray-400" id="loading">🧠 Đang trả lời...</div>`;
         input.value = '';
+        chatBox.scrollTop = chatBox.scrollHeight;
 
-        const response = await fetch("/ai/assistant", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                prompt: userMessage
-            })
-        });
+        try {
+            const res = await fetch('/ai/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message
+                })
+            });
 
-        const data = await response.text();
-        chatBox.innerHTML += `<div class="mb-4"><strong>AI:</strong> ${data}</div>`;
+            const data = await res.json();
+
+            // Xoá loading và hiển thị phản hồi
+            document.getElementById('loading')?.remove();
+            chatBox.innerHTML += `<div class="text-left text-gray-700">🤖 ${data.reply}</div>`;
+        } catch (error) {
+            document.getElementById('loading')?.remove();
+            chatBox.innerHTML += `<div class="text-left text-red-500">❌ Lỗi kết nối đến AI</div>`;
+        }
+
         chatBox.scrollTop = chatBox.scrollHeight;
     });
 </script>
 
 <?php
-// Xử lý gọi AI nếu là POST
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    require_once BASE_PATH . '/controllers/AIController.php';
-    $json = json_decode(file_get_contents("php://input"), true);
-    $prompt = $json['prompt'] ?? '';
-    echo askAI($prompt);
-    exit;
-}
-
 $content = ob_get_clean();
-include BASE_PATH . '/views/layouts/main.php';
+include __DIR__ . '/../layouts/main.php';
