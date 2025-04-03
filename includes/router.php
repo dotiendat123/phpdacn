@@ -107,16 +107,35 @@ switch ($uri) {
         break;
 
     // GOALS
+    // GOALS
     case '/goals':
-        redirect_if_not_logged_in();
         require_once BASE_PATH . '/controllers/GoalController.php';
-        listGoals();
+        $controller = new GoalController();
+        $controller->index();
         break;
 
     case '/goals/create':
-        redirect_if_not_logged_in();
         require_once BASE_PATH . '/controllers/GoalController.php';
-        createGoal();
+        $controller = new GoalController();
+        $controller->create();
+        break;
+
+    case (preg_match('#^/goals/edit/(\d+)$#', $uri, $matches) ? true : false):
+        require_once BASE_PATH . '/controllers/GoalController.php';
+        $controller = new GoalController();
+        $controller->edit($matches[1]);
+        break;
+
+    case (preg_match('#^/goals/delete/(\d+)$#', $uri, $matches) ? true : false):
+        require_once BASE_PATH . '/controllers/GoalController.php';
+        $controller = new GoalController();
+        $controller->delete($matches[1]);
+        break;
+
+    case (preg_match('#^/goals/milestone/(\d+)/([01])$#', $uri, $matches) ? true : false):
+        require_once BASE_PATH . '/controllers/GoalController.php';
+        $controller = new GoalController();
+        $controller->toggleMilestone($matches[1], $matches[2]);
         break;
 
     // AI Assistant

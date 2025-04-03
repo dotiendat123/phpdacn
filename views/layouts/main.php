@@ -14,15 +14,36 @@
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col">
 
     <!-- Navbar -->
-    <header class="bg-white shadow-md px-6 py-4 flex justify-between items-center">
-        <h1 class="text-xl font-bold text-blue-600">🚀 Productivity App</h1>
-        <nav class="space-x-4 text-sm font-medium">
-            <a href="/dashboard" class="hover:text-blue-600">Dashboard</a>
-            <a href="/tasks" class="hover:text-blue-600">Công việc</a>
-            <a href="/habits" class="hover:text-blue-600">Thói quen</a>
-            <a href="/goals" class="hover:text-blue-600">Mục tiêu</a>
-            <a href="/ai/assistant" class="hover:text-blue-600">Trợ lý AI</a>
-            <a href="/logout" class="text-red-500 hover:text-red-600">Đăng xuất</a>
+    <header class="bg-white shadow-lg px-6 py-4 flex justify-between items-center sticky top-0 z-10">
+        <a href="/dashboard" class="inline-block">
+            <h1 class="text-xl font-bold text-blue-600 transition-colors duration-300 hover:text-blue-800">Productivity App</h1>
+        </a>
+        <nav class="space-x-6 text-sm font-medium">
+            <a href="/dashboard" class="relative px-3 py-2 text-gray-700 transition-all duration-300 rounded-md hover:text-blue-600 hover:bg-blue-50 group">
+
+                <span class="absolute inset-0 rounded-md bg-blue-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                <span class="relative z-10">Dashboard</span>
+            </a>
+            <a href="/tasks" class="relative px-3 py-2 text-gray-700 transition-all duration-300 rounded-md hover:text-blue-600 hover:bg-blue-50 group">
+                <span class="absolute inset-0 rounded-md bg-blue-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                <span class="relative z-10">Công việc</span>
+            </a>
+            <a href="/habits" class="relative px-3 py-2 text-gray-700 transition-all duration-300 rounded-md hover:text-blue-600 hover:bg-blue-50 group">
+                <span class="absolute inset-0 rounded-md bg-blue-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                <span class="relative z-10">Thói quen</span>
+            </a>
+            <a href="/goals" class="relative px-3 py-2 text-gray-700 transition-all duration-300 rounded-md hover:text-blue-600 hover:bg-blue-50 group">
+                <span class="absolute inset-0 rounded-md bg-blue-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                <span class="relative z-10">Mục tiêu</span>
+            </a>
+            <a href="/ai/assistant" class="relative px-3 py-2 text-gray-700 transition-all duration-300 rounded-md hover:text-blue-600 hover:bg-blue-50 group">
+                <span class="absolute inset-0 rounded-md bg-blue-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                <span class="relative z-10">Trợ lý AI</span>
+            </a>
+            <a href="/logout" class="relative px-3 py-2 text-red-500 transition-all duration-300 rounded-md hover:text-red-600 hover:bg-red-50 group">
+                <span class="absolute inset-0 rounded-md bg-red-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                <span class="relative z-10">Đăng xuất</span>
+            </a>
         </nav>
     </header>
 
