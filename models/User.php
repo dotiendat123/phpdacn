@@ -9,28 +9,40 @@ class User
         $this->pdo = $pdo;
     }
 
+    // Tìm user theo email
     public function getByEmail($email)
     {
         $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = ?");
         $stmt->execute([$email]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->fetch();
     }
 
+    // Tạo user mới
     public function create($email, $password)
     {
+        $hashed = password_hash($password, PASSWORD_DEFAULT);
         $stmt = $this->pdo->prepare("INSERT INTO users (email, password) VALUES (?, ?)");
-        return $stmt->execute([$email, password_hash($password, PASSWORD_DEFAULT)]);
+        return $stmt->execute([$email, $hashed]);
     }
-    // Lấy email theo ID user
-    public static function getEmailById($user_id)
+
+    // Tìm user theo ID
+    public function find($id)
     {
-        $pdo = $GLOBALS['pdo']; // 👈 Lấy kết nối PDO toàn cục
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch();
+    }
 
-        $stmt = $pdo->prepare("SELECT email FROM users WHERE id = :id");
-        $stmt->execute([':id' => $user_id]);
-
-        $result = $stmt->fetch();
-
-        return $result ? $result['email'] : null;
+    // Cập nhật email hoặc mật khẩu
+    public function update($id, $email, $password = null)
+    {
+        if ($password) {
+            $hashed = password_hash($password, PASSWORD_DEFAULT);
+            $stmt = $this->pdo->prepare("UPDATE users SET email = ?, password = ? WHERE id = ?");
+            return $stmt->execute([$email, $hashed, $id]);
+        } else {
+            $stmt = $this->pdo->prepare("UPDATE users SET email = ? WHERE id = ?");
+            return $stmt->execute([$email, $id]);
+        }
     }
 }

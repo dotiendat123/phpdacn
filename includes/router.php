@@ -172,8 +172,20 @@ switch ($uri) {
         session_destroy();
         header("Location: /login");
         exit;
+        //Thông tin cá nhân
+    case '/user/edit':
+        require_once BASE_PATH . '/controllers/UserController.php';
+        $controller = new UserController();
+        $controller->edit();
+        break;
+    case '/user/update':
+        require_once BASE_PATH . '/controllers/UserController.php';
+        $controller = new UserController();
+        $controller->update();
+        break;
 
-        // 404
+
+    // 404
     default:
         http_response_code(404);
         echo "<h1 style='text-align:center;margin-top:40px;'>404 - Không tìm thấy trang</h1>";

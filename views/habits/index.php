@@ -21,7 +21,7 @@
 
     <!-- GỢI Ý THÓI QUEN TỪ MỤC TIÊU ĐÃ CÓ -->
     <div class="bg-white border border-gray-200 p-5 rounded-lg shadow mb-10">
-        <h3 class="text-lg font-semibold text-gray-800 mb-2"> Gợi ý thói quen từ mục tiêu đã có</h3>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">🎯 Gợi ý thói quen từ mục tiêu đã có</h3>
         <div class="flex items-center gap-3">
             <select id="goalSelect"
                 class="flex-1 border border-gray-300 rounded px-3 py-2 text-sm">
