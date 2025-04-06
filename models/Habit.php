@@ -55,4 +55,14 @@ class Habit
         $stmt = $this->db->prepare("UPDATE habits SET streak = streak + 1, last_completed = CURDATE() WHERE id = ?");
         return $stmt->execute([$id]);
     }
+
+    public static function forUser($userId)
+    {
+        $pdo = require BASE_PATH . '/config/database.php';
+
+        $stmt = $pdo->prepare("SELECT * FROM habits WHERE user_id = :user_id ORDER BY created_at DESC");
+        $stmt->execute(['user_id' => $userId]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

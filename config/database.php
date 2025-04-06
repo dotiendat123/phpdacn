@@ -23,6 +23,8 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
 // }
 
 
+date_default_timezone_set('Asia/Ho_Chi_Minh');
+
 $host = 'localhost';
 $db   = 'productivity_app';
 $user = 'root';       // mặc định XAMPP là root
@@ -37,10 +39,7 @@ try {
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
     ]);
 
-    // Biến toàn cục để các class có thể dùng
-    $GLOBALS['pdo'] = $pdo;
-
-    // echo "Kết nối database thành công!";
+    return $pdo;
 } catch (PDOException $e) {
     die("Kết nối database thất bại: " . $e->getMessage());
 }

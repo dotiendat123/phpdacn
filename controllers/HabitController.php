@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../models/Habit.php';
+require_once __DIR__ . '/../models/Goal.php';
 require_once __DIR__ . '/../config/database.php';
 
 class HabitController
@@ -11,17 +12,39 @@ class HabitController
         $this->model = new Habit($GLOBALS['pdo']);
     }
 
-    public function index()
+    // public function index()
+    // {
+    //     $userId = $_SESSION['user_id'] ?? null;
+    //     if (!$userId) {
+    //         header('Location: /login');
+    //         exit;
+    //     }
+
+    //     $habits = $this->model->getAllByUser($userId);
+    //     include __DIR__ . '/../views/habits/index.php';
+    // }
+
+
+    public function index(): void
     {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
         $userId = $_SESSION['user_id'] ?? null;
+
         if (!$userId) {
-            header('Location: /login');
+            header('Location: /auth/login');
             exit;
         }
 
-        $habits = $this->model->getAllByUser($userId);
-        include __DIR__ . '/../views/habits/index.php';
+        $habits = Habit::forUser($userId);
+        $goals = Goal::forUser($userId);
+
+        include BASE_PATH . '/views/habits/index.php';
     }
+
+
 
 
     public function create()

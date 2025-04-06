@@ -63,7 +63,7 @@ switch ($uri) {
 
 
     // HABITS
-    // HABITS
+
     case '/habits':
         require_once BASE_PATH . '/controllers/HabitController.php';
         $controller = new HabitController();
@@ -105,6 +105,12 @@ switch ($uri) {
         $controller = new HabitController();
         $controller->complete($matches[1]);
         break;
+    // AI SUGGESTIONS FOR HABITS
+    case '/habits/suggest-ai':
+        require_once BASE_PATH . '/controllers/AISuggestionController.php';
+        $controller = new AISuggestionController();
+        $controller->suggestHabitsFromGoal(); // Gọi hàm xử lý gợi ý từ AI
+        break;
 
     // GOALS
     // GOALS
@@ -144,7 +150,7 @@ switch ($uri) {
         break;
 
     case '/ai/chat':
-        require_once BASE_PATH . '/controllers/AIController.php';
+        require_once BASE_PATH . '/controllers/AIChatController.php';
         $controller = new AIController();
         $controller->chat();
         break;
