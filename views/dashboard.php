@@ -1,7 +1,37 @@
 <?php
+// session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 redirect_if_not_logged_in();
 ob_start();
+
+//  Gọi và nhận biến `$conn` từ database.php
+$conn = require __DIR__ . '/../config/database.php';
+
+require_once __DIR__ . '/../models/Task.php';
+require_once __DIR__ . '/../models/Habit.php';
+require_once __DIR__ . '/../models/Goal.php';
+
+$user_id = $_SESSION['user_id'] ?? 1;
+
+// Lấy dữ liệu công việc
+$tasks = Task::getTodayTasks($conn, $user_id);
+$totalTasks = count($tasks);
+$completedTasks = Task::countCompletedToday($conn, $user_id);
+$taskProgress = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100) : 0;
+
+// Lấy dữ liệu thói quen
+$habits = Habit::getTodayHabits($conn, $user_id);
+$totalHabits = count($habits);
+$completedHabits = Habit::countCompletedToday($conn, $user_id);
+$habitStreak = Habit::getStreak($conn, $user_id);
+
+// Lấy dữ liệu mục tiêu
+$goals = Goal::getGoals($conn, $user_id);
+$totalGoals = count($goals);
 ?>
+
 
 <!-- Tiêu đề -->
 <div class="text-center mb-10">
@@ -15,74 +45,65 @@ ob_start();
 </div>
 
 <!-- Thẻ chính -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-[50vh]">
 
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
     <!-- Công việc -->
-    <div class="transform transition hover:scale-105 duration-300 bg-gradient-to-br from-white to-blue-50 p-6 rounded-2xl shadow-md border border-blue-100">
-        <div class="flex items-center gap-3 mb-4">
-            <svg class="w-6 h-6 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 5h6M9 3h6a2 2 0 012 2v1h1a2 2 0 012 2v11a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h1V5a2 2 0 012-2z" />
-            </svg>
-            <h2 class="text-xl font-bold text-blue-700">Công việc</h2>
-        </div>
-
-        <p class="text-gray-700 mb-2">Bạn có <strong>3</strong> công việc cần làm hôm nay.</p>
-        <ul class="text-sm text-gray-600 list-disc pl-5 space-y-1 mb-3">
-            <li><strong>Ưu tiên:</strong> Hoàn thành báo cáo tuần</li>
-            <li>2 việc quá hạn</li>
-            <li>1 việc mới được thêm</li>
+    <div class="bg-blue-50 p-5 rounded-2xl shadow">
+        <h2 class="text-blue-600 font-bold text-xl flex items-center">
+            🗂️ Công việc
+        </h2>
+        <p class="mt-2">Bạn có <strong><?= $totalTasks ?></strong> công việc cần làm hôm nay.</p>
+        <ul class="text-sm mt-2 list-disc pl-5">
+            <?php if (!empty($tasks)): ?>
+                <li><strong>Ưu tiên:</strong> <?= htmlspecialchars($tasks[0]['title']) ?></li>
+                <?php if ($totalTasks > 1): ?>
+                    <li><?= $totalTasks - 1 ?> việc khác</li>
+                <?php endif; ?>
+            <?php else: ?>
+                <li>Không có công việc nào hôm nay.</li>
+            <?php endif; ?>
         </ul>
-
-        <div class="mb-4 text-sm">
-            <div class="bg-gray-200 h-3 rounded-full overflow-hidden">
-                <div class="bg-blue-500 h-3 rounded-full w-[75%]"></div>
-            </div>
-            <p class="text-gray-500 mt-1">Hoàn thành 75% công việc hôm nay</p>
+        <div class="w-full h-3 bg-gray-200 rounded-full mt-3">
+            <div class="h-3 bg-blue-500 rounded-full" style="width: <?= $taskProgress ?>%;"></div>
         </div>
-
-        <a href="/tasks" class="text-blue-600 hover:underline text-sm font-semibold">→ Xem danh sách công việc</a>
+        <p class="text-sm mt-1 text-gray-600">Hoàn thành <?= $taskProgress ?>% công việc hôm nay</p>
+        <a href="/views/tasks/index.php" class="text-blue-600 text-sm mt-2 inline-block">→ Xem danh sách công việc</a>
     </div>
 
     <!-- Thói quen -->
-    <div class="transform transition hover:scale-105 duration-300 bg-gradient-to-br from-white to-green-50 p-6 rounded-2xl shadow-md border border-green-100">
-        <div class="flex items-center gap-3 mb-4">
-            <svg class="w-6 h-6 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M8 7V3m8 4V3M5 11h14M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <h2 class="text-xl font-bold text-green-700">Thói quen</h2>
-        </div>
-
-        <p class="text-gray-700 mb-2">Đã hoàn thành <strong>2/5</strong> thói quen hôm nay.</p>
-        <ul class="text-sm text-gray-600 list-disc pl-5 space-y-1 mb-3">
-            <li><span class="text-green-500">✔</span> Uống nước đủ</li>
-            <li><span class="text-green-500">✔</span> Dậy sớm</li>
-            <li><span class="text-yellow-500">⌛</span> Thiền & đọc sách</li>
+    <div class="bg-green-50 p-5 rounded-2xl shadow">
+        <h2 class="text-green-700 font-bold text-xl flex items-center">
+            📅 Thói quen
+        </h2>
+        <p class="mt-2">Đã hoàn thành <strong><?= $completedHabits ?>/<?= $totalHabits ?></strong> thói quen hôm nay.</p>
+        <ul class="text-sm mt-2 list-disc pl-5">
+            <?php foreach ($habits as $habit): ?>
+                <li>
+                    <?= $habit['last_completed'] === date('Y-m-d') ? '✅' : '⏳' ?>
+                    <?= htmlspecialchars($habit['name']) ?>
+                </li>
+            <?php endforeach; ?>
         </ul>
-
-        <p class="text-xs text-gray-500 mt-2">🔥 Đang duy trì chuỗi <strong>3 ngày</strong></p>
-        <a href="/habits" class="text-green-600 hover:underline text-sm font-semibold block mt-2">→ Xem danh sách thói quen</a>
+        <p class="text-sm mt-2 text-orange-500">🔥 Đang duy trì chuỗi <strong><?= $habitStreak ?></strong> ngày</p>
+        <a href="/views/habits/index.php" class="text-green-700 text-sm mt-2 inline-block">→ Xem danh sách thói quen</a>
     </div>
 
     <!-- Mục tiêu -->
-    <div class="transform transition hover:scale-105 duration-300 bg-gradient-to-br from-white to-pink-50 p-6 rounded-2xl shadow-md border border-pink-100">
-        <div class="flex items-center gap-3 mb-4">
-            <svg class="w-6 h-6 text-pink-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 8v4l3 3M12 2a10 10 0 110 20 10 10 0 010-20z" />
-            </svg>
-            <h2 class="text-xl font-bold text-pink-700">Mục tiêu</h2>
-        </div>
-        <p class="text-gray-700 mb-2">Bạn đang theo dõi <strong>4</strong> mục tiêu cá nhân.</p>
-        <ul class="text-sm text-gray-600 list-disc pl-5 space-y-1">
-            <li>💸 Tiết kiệm 5 triệu/tháng</li>
-            <li>📖 Đọc 12 cuốn sách/năm</li>
-            <li>🖥 Học xong khoá ReactJS</li>
+    <div class="bg-pink-50 p-5 rounded-2xl shadow">
+        <h2 class="text-pink-600 font-bold text-xl flex items-center">
+            ⏰ Mục tiêu
+        </h2>
+        <p class="mt-2">Bạn đang theo dõi <strong><?= $totalGoals ?></strong> mục tiêu cá nhân.</p>
+        <ul class="text-sm mt-2 list-disc pl-5">
+            <?php foreach (array_slice($goals, 0, 3) as $goal): ?>
+                <li>🎯 <?= htmlspecialchars($goal['title']) ?></li>
+            <?php endforeach; ?>
         </ul>
-        <a href="/goals" class="text-pink-600 hover:underline text-sm font-semibold block mt-2">→ Xem danh sách mục tiêu</a>
+        <a href="/views/goals/index.php" class="text-pink-600 text-sm mt-2 inline-block">→ Xem danh sách mục tiêu</a>
     </div>
 </div>
+
 
 <!-- Trợ lý AI và Nút thêm -->
 <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">

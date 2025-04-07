@@ -31,7 +31,7 @@
             <div class="flex justify-center">
                 <button type="submit"
                     class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-2 rounded-md shadow transition">
-                    💾 Lưu thay đổi
+                    Lưu thay đổi
                 </button>
             </div>
         </form>

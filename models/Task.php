@@ -102,4 +102,22 @@ class Task
 
         return $results;
     }
+
+    public static function getTodayTasks($conn, $user_id)
+    {
+        $stmt = $conn->prepare("SELECT * FROM tasks WHERE user_id = ? AND DATE(due_date) = CURDATE()");
+        $stmt->execute([$user_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function countCompletedToday($conn, $user_id)
+    {
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM tasks WHERE user_id = ? AND DATE(due_date) = CURDATE() AND status = 'hoàn thành'");
+        $stmt->execute([$user_id]);
+        return $stmt->fetchColumn();
+    }
+
+    // Các hàm còn lại bạn có thể dùng $GLOBALS['pdo'] nếu muốn hoặc truyền $conn vào tương tự
+
+
 }

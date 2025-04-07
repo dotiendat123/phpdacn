@@ -78,4 +78,10 @@ class Goal
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    public static function getGoals($conn, $user_id)
+    {
+        $stmt = $conn->prepare("SELECT * FROM goals WHERE user_id = ? ORDER BY created_at DESC");
+        $stmt->execute([$user_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

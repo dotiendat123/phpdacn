@@ -65,4 +65,29 @@ class Habit
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public static function getTodayHabits($conn, $user_id)
+    {
+        $stmt = $conn->prepare("SELECT * FROM habits WHERE user_id = ?");
+        $stmt->execute([$user_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function countCompletedToday($conn, $user_id)
+    {
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM habits WHERE user_id = ? AND last_completed = CURDATE()");
+        $stmt->execute([$user_id]);
+        return $stmt->fetchColumn();
+    }
+
+    public static function getStreak($conn, $user_id)
+    {
+        $stmt = $conn->prepare("SELECT MAX(streak) FROM habits WHERE user_id = ?");
+        $stmt->execute([$user_id]);
+        return $stmt->fetchColumn() ?: 0;
+    }
+
+    // Các method OOP như create(), update()... dùng $this->db (tạo qua constructor) vẫn giữ nguyên
+
+
 }
