@@ -107,7 +107,7 @@ switch ($uri) {
         break;
     // AI SUGGESTIONS FOR HABITS
     case '/habits/suggest-ai':
-        require_once BASE_PATH . '/controllers/AISuggestionController.php';
+        require_once BASE_PATH . '/controllers/AISuggestionHabitController.php';
         $controller = new AISuggestionController();
         $controller->suggestHabitsFromGoal(); // Gọi hàm xử lý gợi ý từ AI
         break;

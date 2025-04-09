@@ -29,23 +29,47 @@ class Goal
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function create($data)
+    // public function create($data)
+    // {
+    //     $stmt = $this->db->prepare("INSERT INTO goals (user_id, title, description, deadline) VALUES (?, ?, ?, ?)");
+    //     $stmt->execute([
+    //         $data['user_id'],
+    //         $data['title'],
+    //         $data['description'],
+    //         $data['deadline']
+    //     ]);
+    //     return $this->db->lastInsertId();
+    // }
+    public static function create($data)
     {
-        $stmt = $this->db->prepare("INSERT INTO goals (user_id, title, description, deadline) VALUES (?, ?, ?, ?)");
+        global $pdo;
+
+        $stmt = $pdo->prepare("INSERT INTO goals (user_id, title, description, deadline, created_at) 
+                               VALUES (?, ?, ?, ?, NOW())");
         $stmt->execute([
             $data['user_id'],
             $data['title'],
             $data['description'],
             $data['deadline']
         ]);
-        return $this->db->lastInsertId();
+
+        return $pdo->lastInsertId();
     }
 
-    public function addMilestone($goal_id, $title)
+    public static function addMilestone($goalId, $milestoneTitle)
     {
-        $stmt = $this->db->prepare("INSERT INTO milestones (goal_id, title) VALUES (?, ?)");
-        return $stmt->execute([$goal_id, $title]);
+        global $pdo;
+
+        $stmt = $pdo->prepare("INSERT INTO milestones (goal_id, title, is_completed, created_at) 
+                               VALUES (?, ?, 0, NOW())");
+        return $stmt->execute([$goalId, $milestoneTitle]);
     }
+
+    // public function addMilestone($goal_id, $title)
+    // {
+    //     $stmt = $this->db->prepare("INSERT INTO milestones (goal_id, title) VALUES (?, ?)");
+    //     return $stmt->execute([$goal_id, $title]);
+    // }
 
     public function markMilestone($milestone_id, $status)
     {

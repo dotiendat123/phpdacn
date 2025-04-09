@@ -68,4 +68,51 @@ class GoalController
         $this->model->markMilestone($id, $status);
         header('Location: ' . $_SERVER['HTTP_REFERER']);
     }
+    public function store()
+    {
+        session_start();
+        $userId = $_SESSION['user_id'] ?? null;
+        if (!$userId) {
+            header('Location: /auth/login');
+            exit;
+        }
+
+        $title = $_POST['title'] ?? '';
+        $description = $_POST['description'] ?? '';
+        $deadline = $_POST['deadline'] ?? '';
+        $manualMilestones = $_POST['milestones'] ?? [];
+        $suggestedStepsJson = $_POST['suggested_steps_json'] ?? '[]';
+
+        if (empty($title) || empty($deadline)) {
+            $_SESSION['error'] = "Vui lòng nhập đầy đủ thông tin";
+            header('Location: /goals/create');
+            exit;
+        }
+
+        // Tạo mục tiêu
+        $goalId = Goal::create([
+            'user_id' => $userId,
+            'title' => $title,
+            'description' => $description,
+            'deadline' => $deadline,
+        ]);
+
+        // Thêm các milestones thủ công
+        foreach ($manualMilestones as $step) {
+            if (trim($step)) {
+                Goal::addMilestone($goalId, trim($step));
+            }
+        }
+
+        // Thêm các bước nhỏ được gợi ý từ AI
+        $aiSteps = json_decode($suggestedStepsJson, true);
+        foreach ($aiSteps as $step) {
+            if (trim($step)) {
+                Goal::addMilestone($goalId, trim($step));
+            }
+        }
+
+        $_SESSION['success'] = "Mục tiêu đã được tạo cùng các bước nhỏ";
+        header('Location: /goals');
+    }
 }
