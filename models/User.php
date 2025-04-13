@@ -45,4 +45,13 @@ class User
             return $stmt->execute([$email, $id]);
         }
     }
+    public static function getEmailById($userId)
+    {
+        global $pdo;
+        $stmt = $pdo->prepare("SELECT email FROM users WHERE id = ?");
+        $stmt->execute([$userId]);
+        $result = $stmt->fetch();
+
+        return $result ? $result['email'] : null;
+    }
 }
